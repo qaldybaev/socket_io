@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Chat</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card w-100" style="max-width: 600px;">
+      <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Online Chat</h4>
+      </div>
+      <div class="card-body" style="height: 400px; overflow-y: auto;" id="messages"></div>
+      <div class="card-footer">
+        <form id="messageForm" class="d-flex gap-2">
+          <input type="text" id="messageInput" class="form-control" placeholder="Xabar yozing..." />
+          <button type="submit" class="btn btn-success">Yuborish</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.1.0/socket.io.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
+
+</body>
+</html>
