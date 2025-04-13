@@ -8,7 +8,7 @@ elForm.addEventListener("submit", async (e) => {
   localStorage.setItem("name", name);
 
   try {
-    const res = await fetch("http://localhost:3000/api/login", {
+    const res = await fetch("http://192.168.100.205:3000/api/login", {
       method: "POST",
       headers: {
         "content-type": "application/json"

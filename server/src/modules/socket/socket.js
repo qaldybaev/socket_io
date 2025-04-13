@@ -1,14 +1,18 @@
-
 import messageModel from "../message/message.model.js";
 import userModel from "../user/user.model.js";
 
 export const socketHandler = (io) => {
   io.on("connection", async (socket) => {
-    const messages = await messageModel.find().populate("user");
+    const messages = await messageModel
+      .find()
+      .sort([["createdAt", "asc"]])
+      .populate("user");
     socket.emit("message", messages);
 
     socket.on("typing", async (data) => {
       const user = await userModel.findById(data.user);
+      console.log(data)
+      console.log(user)
       socket.broadcast.emit("typing", user);
     });
 
@@ -18,7 +22,10 @@ export const socketHandler = (io) => {
         user: data.user,
       });
 
-      const messages = await messageModel.find().populate("user");
+      const messages = await messageModel
+        .find()
+        .sort([["createdAt", "asc"]])
+        .populate("user");
       io.emit("message", messages);
     });
 
@@ -32,7 +39,7 @@ export const socketHandler = (io) => {
       });
 
       const messages = await messageModel.find().populate("user");
-      io.emit("message", messages);
+      socket.emit("message", messages);
     });
   });
 };

@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema(
     message: [
       {
         type: mongoose.SchemaTypes.ObjectId,
-        ref: "Message", 
+        ref: "Message",
       },
     ],
   },
