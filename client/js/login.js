@@ -1,4 +1,3 @@
-import socket from "./main.js";
 
 const elForm = document.querySelector(".login-form");
 

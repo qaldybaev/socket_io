@@ -2,17 +2,18 @@ import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
 
 const socket = io("http://localhost:3000");
 
-const elMessages = document.querySelector("messages");
-let user = JSON.parse(localStorage.getItem("user"));
+const elMessages = document.querySelector(".messages");
 const elForm = document.querySelector(".message-form");
 const elInput = document.querySelector(".message-input");
+const elTyping = document.querySelector(".typing-text")
 
 socket.on("message", (msgs) => {
+  let user = JSON.parse(localStorage.getItem("user"));
   elMessages.innerHTML = "";
 
-  msgs.foreach((m) => {
+  msgs.forEach((m) => {
     if (m.type === "message") {
-      if (m.user._id == user._id) {
+      if (m.user?._id == user._id) {
         elMessages.insertAdjacentHTML(
           "beforeend",
           `<div class="my-message align-self-end">
@@ -20,7 +21,7 @@ socket.on("message", (msgs) => {
               ${m.text}
             </p>
             <div class="author fs-6 fw-bolder mb-2 text-end">
-              ${m.user.name.slice(0, 3)}<span>${m.createdAt}</span>
+              ${m.user?.name.slice(0, 3)}<span>${m.createdAt}</span>
             </div>
           </div>`
         );
@@ -32,7 +33,7 @@ socket.on("message", (msgs) => {
                ${m.text}
             </p>
             <div class="author fs-6 fw-bolder mb-2">
-              ${m.user.name.slice(0, 10)} <span>${m.createdAt}</span>
+              ${m.user?.name.slice(0, 10)} <span>${m.createdAt}</span>
             </div>
           </div>`
         );
@@ -43,7 +44,7 @@ socket.on("message", (msgs) => {
       elMessages.insertAdjacentHTML(
         "beforeend",
         `<div class="join-message text-center text-success border rounded-2">
-            <p class="p-0 m-0">${m.user.name.slice(0, 10)} qoshildi.
+            <p class="p-0 m-0">${m.user?.name.slice(0, 10)} qoshildi.
             <span>${m.createdAt}</span>
             </p>
           </div>`
@@ -52,15 +53,28 @@ socket.on("message", (msgs) => {
   });
 });
 
+socket.on("typing",(user) => {
+  elTyping.innerHTML = ""
+  elTyping.textContent = `${user.name} yoziyapti...`
+})
+
 elInput.addEventListener("keyup",function (e) {
-  socket.emit("typing", { user: user_id });
+  let user = JSON.parse(localStorage.getItem("user"));
+  socket.emit("typing", { user: user._id });
 });
 
 elForm.addEventListener("submit", (e) => {
+  let user = JSON.parse(localStorage.getItem("user"));
   e.preventDefault();
 
   const text = e.target.message.value;
 
-  socket.emit("message", { user: user_id, text });
+  // faqat text bo‘lsa yuboramiz
+  if (text.trim()) {
+    socket.emit("message", { user: user._id, text });
+  }
+
+  e.target.message.value = "";
 });
+
 export default socket;

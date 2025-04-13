@@ -2,11 +2,14 @@ import messageModel from "../message/message.model.js";
 import userModel from "../user/user.model.js";
 
 export const socketHandler = (io) => {
-  io.on("connection", (socket) => {
+  io.on("connection", async (socket) => {
+    const messages = await messageModel.find().populate("user");
+
+    socket.emit("message", messages);
     socket.on("typing", async (data) => {
       const user = await userModel.findById(data.user);
 
-      socket.broadcast.emit("typing", user.name);
+      socket.broadcast.emit("typing", user);
     });
     socket.on("message", async (data) => {
       const newMessage = await messageModel.create({
@@ -20,7 +23,7 @@ export const socketHandler = (io) => {
     });
     socket.on("message", async (data) => {
       const newMessage = await messageModel.create({
-        type:"join_message",
+        type: "join_message",
         user: data.user,
       });
 
