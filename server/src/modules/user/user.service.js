@@ -23,13 +23,12 @@ class UserService {
       throw new Error("User allaqachon mavjud!");
     }
     const user = await this.userModel.create({ name });
-const message = await messageModel.create({
-    type:"join_message",
-    user:user._id
-})
+    const message = await messageModel.create({
+      type: "join_message",
+      user: user._id,
+    });
     return {
-      message: "Yaratildi",
-      data: user,
+      data: user
     };
   };
 }

@@ -1,35 +1,38 @@
+
 import messageModel from "../message/message.model.js";
 import userModel from "../user/user.model.js";
 
 export const socketHandler = (io) => {
   io.on("connection", async (socket) => {
     const messages = await messageModel.find().populate("user");
-
     socket.emit("message", messages);
+
     socket.on("typing", async (data) => {
       const user = await userModel.findById(data.user);
-
       socket.broadcast.emit("typing", user);
     });
-    socket.on("message", async (data) => {
-      const newMessage = await messageModel.create({
+
+    socket.on("new_message", async (data) => {
+      await messageModel.create({
         text: data.text,
         user: data.user,
       });
 
       const messages = await messageModel.find().populate("user");
-
-      socket.emit("message", messages);
+      io.emit("message", messages);
     });
-    socket.on("message", async (data) => {
-      const newMessage = await messageModel.create({
+
+    socket.on("join", async (data) => {
+      const user = await userModel.findById(data.user);
+      if (!user) return;
+
+      await messageModel.create({
         type: "join_message",
         user: data.user,
       });
 
       const messages = await messageModel.find().populate("user");
-
-      socket.emit("message", messages);
+      io.emit("message", messages);
     });
   });
 };

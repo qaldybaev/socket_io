@@ -1,20 +1,20 @@
+// src/modules/message/message.model.js
 import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
     text: {
-      type:String,
-     
+      type: String,
     },
-    type:{
-        type:String,
-        enum:["message","join_message"],
-        default:"message"
+    type: {
+      type: String,
+      enum: ["message", "join_message"],
+      default: "message",
     },
-    user:{
-        type:mongoose.SchemaTypes.ObjectId,
-        ref:"User"
-    }
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
+    },
   },
   {
     collection: "messages",

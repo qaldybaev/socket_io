@@ -3,13 +3,15 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema(
   {
     name: {
-      type:String,
-      unique:true
+      type: String,
+      unique: true,
     },
-    message:[{
-      type:mongoose.SchemaTypes.ObjectId,
-      ref:"message"
-    }]
+    message: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Message", 
+      },
+    ],
   },
   {
     collection: "users",
