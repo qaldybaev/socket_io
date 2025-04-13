@@ -1,34 +1,35 @@
-const loginForm = document.getElementById("loginForm");
+import socket from "./main.js";
 
-loginForm.addEventListener("submit", async (e) => {
+const elForm = document.querySelector(".login-form");
+
+elForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const nameInput = document.getElementById("name");
-  const name = nameInput.value.trim();
-
-  if (!name) {
-    alert("Iltimos, ismingizni kiriting.");
-    return;
-  }
-
-  // LocalStorage ga yozamiz
+  const name = e.target.name.value;
   localStorage.setItem("name", name);
 
-  // Backendga yuboramiz
   try {
-    const res = await fetch("http://localhost:3000/api/users", {
+    const res = await fetch("http://localhost:3000/api/login", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "content-type": "application/json"
       },
-      body: JSON.stringify({ name })
+      body: JSON.stringify({
+        name,
+      }),
     });
 
+    if (res.status >= 400) {
+      const data = await res.json();
+      alert(data.message);
+      return;
+    }
+
     const data = await res.json();
-    console.log("Serverdan javob:", data);
-    window.location.href = "../index.html";
-  } catch (err) {
-    console.error("Xatolik:", err);
-    alert("Server bilan bog‘lanishda xatolik yuz berdi.");
+    localStorage.setItem("user",JSON.stringify(data.data))
+
+    window.location.href = "/";
+  } catch (error) {
+    alert(error.message);
   }
 });

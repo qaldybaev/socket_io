@@ -2,7 +2,14 @@ import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema(
   {
-    name: String,
+    name: {
+      type:String,
+      unique:true
+    },
+    message:[{
+      type:mongoose.SchemaTypes.ObjectId,
+      ref:"message"
+    }]
   },
   {
     collection: "users",

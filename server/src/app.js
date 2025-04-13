@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cors from "cors";
 import { Server } from "socket.io";
 import userRouter from "./modules/user/user.route.js";
+import { socketHandler } from "./modules/index.js";
 
 const app = express();
 const server = createServer(app);
@@ -27,18 +28,11 @@ if (process.env.NODE_ENV.trim() === "development") {
 
 app.use("/api", userRouter);
 
-io.on("connection", (socket) => {
-  console.log("Foydalanuvchi ulanishi");
+socketHandler(io)
 
-  socket.on("message", (msg) => {
-    console.log("Xabar keldi:", msg);
-    socket.emit("message", `Yangi xabar: ${msg}`);
-    socket.broadcast.emit("message", `Yangi xabar: ${msg}`);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Foydalanuvchi uzildi");
-  });
-});
-
+app.use((error,req,res,next) =>{
+  res.status(400).send({
+    message:error.message
+  })
+})
 export default server;

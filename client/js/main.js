@@ -2,29 +2,65 @@ import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
 
 const socket = io("http://localhost:3000");
 
+const elMessages = document.querySelector("messages");
+let user = JSON.parse(localStorage.getItem("user"));
+const elForm = document.querySelector(".message-form");
+const elInput = document.querySelector(".message-input");
 
-const name = localStorage.getItem("name");
+socket.on("message", (msgs) => {
+  elMessages.innerHTML = "";
 
-const messageInput = document.getElementById("messageInput");
-const messageForm = document.getElementById("messageForm");
-const messagesDiv = document.getElementById("messages");
+  msgs.foreach((m) => {
+    if (m.type === "message") {
+      if (m.user._id == user._id) {
+        elMessages.insertAdjacentHTML(
+          "beforeend",
+          `<div class="my-message align-self-end">
+            <p class="message border d-inline p-2 rounded-3">
+              ${m.text}
+            </p>
+            <div class="author fs-6 fw-bolder mb-2 text-end">
+              ${m.user.name.slice(0, 3)}<span>${m.createdAt}</span>
+            </div>
+          </div>`
+        );
+      } else {
+        elMessages.insertAdjacentHTML(
+          "beforeend",
+          ` <div class="other-message">
+            <p class="message border d-inline p-2 rounded-3">
+               ${m.text}
+            </p>
+            <div class="author fs-6 fw-bolder mb-2">
+              ${m.user.name.slice(0, 10)} <span>${m.createdAt}</span>
+            </div>
+          </div>`
+        );
+      }
+    }
 
-messageForm.addEventListener("submit", (e) => {
+    if (m.type === "join_message") {
+      elMessages.insertAdjacentHTML(
+        "beforeend",
+        `<div class="join-message text-center text-success border rounded-2">
+            <p class="p-0 m-0">${m.user.name.slice(0, 10)} qoshildi.
+            <span>${m.createdAt}</span>
+            </p>
+          </div>`
+      );
+    }
+  });
+});
+
+elInput.addEventListener("keyup",function (e) {
+  socket.emit("typing", { user: user_id });
+});
+
+elForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const message = messageInput.value.trim();
-  if (!message) return;
+  const text = e.target.message.value;
 
-  socket.emit("message", `${name}: ${message}`);
-
-  messageInput.value = "";
+  socket.emit("message", { user: user_id, text });
 });
-
-socket.on("message", (msg) => {
-  const div = document.createElement("div");
-  div.className = "alert alert-secondary py-2 px-3 mb-2";
-  div.textContent = msg;
-  messagesDiv.appendChild(div);
-
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-});
+export default socket;
